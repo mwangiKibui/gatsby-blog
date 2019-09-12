@@ -1,22 +1,7 @@
   /** this is a configuration file for node js */
   const path = require('path');
 
-  module.exports.onCreateNode = ({node,actions}) => {
-        const {createNodeField} = actions;
-
-        //we get only the files with the md
-        if(node.internal.type === "MarkdownRemark"){
-            const slug = path.basename(node.fileAbsolutePath,'.md');
-            //we create the nodes
-            console.log('@@@slug ',slug);
-            createNodeField({
-                node,
-                name:'slug',
-                value:slug
-            })
-        }
-        
-  };
+ 
 
   module.exports.createPages = async ({graphql,actions}) => {
       const {createPage} = actions;
@@ -28,24 +13,22 @@
       //get markdown data --- the graphql returns a promise
        const res = await graphql(`
             query{
-                allMarkdownRemark {
+                allContentfulBlogBootcamp {
                     edges {
                         node {
-                            fields {
-                                slug
-                            }
+                            slug
                         }
                     }
                 }
             }
        `)
-       res.data.allMarkdownRemark.edges.forEach(edge => {
+       res.data.allContentfulBlogBootcamp.edges.forEach(edge => {
            createPage({ //has the following params
                component:blogTemplate,
-               path:`/blog/${edge.node.fields.slug}`,
+               path:`/blog/${edge.node.slug}`,
                context:{
-                   slug:edge.node.fields.slug
-               }
+                   slug:edge.node.slug
+               } //we shall send the following slug to page
            })
        });
 
